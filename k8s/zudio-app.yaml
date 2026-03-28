@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zudio-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zudio-app
+  template:
+    metadata:
+      labels:
+        app: zudio-app
+    spec:
+      containers:
+      - name: zudio-app
+        image: ramesh0112/zudio-app:latest
+        ports:
+        - containerPort: 80
+      resources:
+  requests:
+    memory: "128Mi"
+    cpu: "100m"
+  limits:
+    memory: "256Mi"
+    cpu: "500m"
