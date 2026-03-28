@@ -1,0 +1,75 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = "ramesh0112/zudio-app"
+        TAG = "${BUILD_NUMBER}"
+        REPO_URL = "https://github.com/rameshlinuxadmin/zudio.git"
+        GIT_CREDENTIALS_ID = "github"
+        DOCKER_CREDENTIALS_ID = "docker-creds"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git credentialsId: "${GIT_CREDENTIALS_ID}", url: "${REPO_URL}"
+            }
+        }
+/*
+
+        stage('Build Docker Image') {
+            steps {
+                sh """
+                docker build -t $DOCKER_IMAGE:$TAG ./app
+                """
+            }
+        }
+
+        stage('Login to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: "${DOCKER_CREDENTIALS_ID}",
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh """
+                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                    """
+                }
+            }
+        }
+
+        stage('Push Image') {
+            steps {
+                sh """
+                docker push $DOCKER_IMAGE:$TAG
+                docker tag $DOCKER_IMAGE:$TAG $DOCKER_IMAGE:latest
+                docker push $DOCKER_IMAGE:latest
+                """
+            }
+        }
+
+        stage('Update K8s Manifest') {
+            steps {
+                sh """
+                sed -i 's|image: .*|image: $DOCKER_IMAGE:$TAG|' k8s/deployment.yaml
+                """
+            }
+        }
+
+        stage('Commit & Push Changes') {
+            steps {
+                sh """
+                git config user.email "jenkins@example.com"
+                git config user.name "jenkins"
+
+                git add k8s/deployment.yaml
+                git commit -m "Update image to $DOCKER_IMAGE:$TAG" || echo "No changes"
+                git push https://$GIT_USERNAME:$GIT_PASSWORD@github.com/your-username/your-repo.git HEAD:main
+                """
+            }
+        }
+    }*/
+}
+}
