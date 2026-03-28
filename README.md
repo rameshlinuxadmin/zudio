@@ -36,6 +36,9 @@ This repository implements a sample web app CI/CD pipeline:
 ├── k8s/
 │   ├── zudio-app.yaml
 │   └── zudio-service.yaml
+├── ArgoCD/
+│   ├── Appproject.yaml
+│   └── ApplicationSet.yaml
 └── job-DSL/
     └── seed.groovy
 ```
