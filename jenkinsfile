@@ -13,8 +13,10 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git credentialsId: "${GIT_CREDENTIALS_ID}", url: "${REPO_URL}"
-            }
+                git branch: 'main',
+                credentialsId: "${GIT_CREDENTIALS_ID}",
+                url: "${REPO_URL}"
+    }
         }
 /*
 
