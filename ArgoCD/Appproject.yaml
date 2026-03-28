@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: zudio 
+  namespace: argocd
+spec:
+  description: Zudio Franchise
+
+  sourceRepos:
+    - https://github.com/rameshlinuxadmin/*
+
+  destinations:
+    - namespace: 'zudio'
+      server: https://kubernetes.default.svc
+
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'

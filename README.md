@@ -218,11 +218,22 @@ spec:
 
 ## Argo CD Integration
 
-- Configure Argo CD app to point at this repository path.
-- Set refresh mode to automatic or polling.
-- Use GitOps pattern: PB state is `k8s/` manifests.
+Argo CD config in `ArgoCD/` now includes:
 
-> update `k8s/zudio-app.yaml` image to `ramesh0112/zudio-app:${TAG}` for deterministic deployment; avoid `latest` in production.
+- `ArgoCD/Appproject.yaml` defines a project named `zudio`.
+  - source repos: `https://github.com/rameshlinuxadmin/*`
+  - destinations: namespace `zudio` on in-cluster server
+
+- `ArgoCD/ApplicationSet.yaml` defines application `my-app` in `argocd` namespace.
+  - source repo: `https://github.com/rameshlinuxadmin/zudio.git`
+  - target revision: `main`
+  - path: `k8s`
+  - destination: namespace `zudio`, in-cluster server
+  - automated sync with `prune: true`, `selfHeal: true`, `CreateNamespace=true`
+
+Jenkins output should push a new image tag, then update `k8s/zudio-app.yaml` image version before committing. This keeps the GitOps flow consistent.
+
+> For production, use explicit image tag in `k8s/zudio-app.yaml` and avoid `latest`.
 
 ## Key Notes
 
