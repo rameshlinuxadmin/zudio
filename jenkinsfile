@@ -16,18 +16,17 @@ pipeline {
                 git branch: 'main',
                 credentialsId: "${GIT_CREDENTIALS_ID}",
                 url: "${REPO_URL}"
-    }
+            }
         }
-/*
 
         stage('Build Docker Image') {
             steps {
                 sh """
-                docker build -t $DOCKER_IMAGE:$TAG ./app
+                docker build -t $DOCKER_IMAGE:$TAG .
                 """
             }
         }
-
+/*
         stage('Login to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(
