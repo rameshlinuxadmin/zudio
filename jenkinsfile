@@ -26,7 +26,7 @@ pipeline {
                 """
             }
         }
-/*
+
         stage('Login to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(
@@ -40,7 +40,7 @@ pipeline {
                 }
             }
         }
-
+/*
         stage('Push Image') {
             steps {
                 sh """
