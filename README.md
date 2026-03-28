@@ -1,52 +1,54 @@
 # 🚀 Zudio App CI/CD Pipeline (Jenkins + Docker + Argo CD)
 
-This project demonstrates a complete CI/CD pipeline using:
+A complete end-to-end example of a GitOps-driven CI/CD workflow using Jenkins, Docker, Kubernetes, and Argo CD.
 
-- Jenkins (CI)
-- Docker (Image build & push)
-- Docker Hub (Image registry)
-- Kubernetes (Docker Desktop)
-- Argo CD (GitOps deployment)
-- Job DSL (Jenkins automation)
+## Table of Contents
 
----
+- [Project Overview](#project-overview)
+- [Project Structure](#project-structure)
+- [CI/CD Flow](#cicd-flow)
+- [Dockerfile](#dockerfile)
+- [Jenkinsfile (Windows)](#jenkinsfile-windows)
+- [Kubernetes Deployment](#kubernetes-deployment)
+- [Access Application](#access-application)
+- [Argo CD](#argo-cd)
+- [Key Notes](#key-notes)
+- [Troubleshooting](#troubleshooting)
 
-# 📁 Project Structure
+## Project Overview
 
+This project demonstrates an automated pipeline:
+- commit code → Jenkins builds Docker image → push to Docker Hub
+- update Kubernetes manifests → commit
+- Argo CD detects Git change → deploy to Kubernetes
+
+## Project Structure
+
+```
 .
 ├── Dockerfile
-├── jenkinsfile
+├── Jenkinsfile
 ├── zudio-website.zip
 ├── k8s/
 │   ├── deployment.yaml
 │   └── service.yaml
-├── job-dsl/
-│   └── seed.groovy
+└── job-dsl/
+    └── seed.groovy
+```
 
----
+## CI/CD Flow
 
-# ⚙️ CI/CD Flow
+1. GitHub commit / webhook trigger
+2. Jenkins pulls source
+3. Build Docker image
+4. Push image to Docker Hub
+5. Update Kubernetes deployment manifest with new image tag
+6. Commit manifest changes
+7. Argo CD syncs and deploys to cluster
 
-GitHub Commit
-     ↓
-Jenkins (Poll SCM / Trigger)
-     ↓
-Build Docker Image
-     ↓
-Push to Docker Hub
-     ↓
-Update Kubernetes YAML (image tag)
-     ↓
-Commit to GitHub
-     ↓
-Argo CD detects change
-     ↓
-Deploys to Kubernetes
+## Dockerfile
 
----
-
-# 🐳 Dockerfile
-
+```dockerfile
 FROM httpd:2.4
 
 LABEL Name="Ramesh Aravind" Version="v1.0.0"
@@ -55,16 +57,18 @@ WORKDIR /usr/local/apache2/htdocs
 
 COPY zudio-website.zip .
 
-RUN apt-get update && apt-get install -y unzip     && unzip zudio-website.zip     && rm zudio-website.zip
+RUN apt-get update \
+    && apt-get install -y unzip \
+    && unzip zudio-website.zip \
+    && rm zudio-website.zip
 
 EXPOSE 80
-
 CMD ["httpd-foreground"]
+```
 
----
+## Jenkinsfile (Windows)
 
-# 🔧 Jenkinsfile (Windows)
-
+```groovy
 pipeline {
     agent any
 
@@ -75,7 +79,6 @@ pipeline {
     }
 
     stages {
-
         stage('Build Docker Image') {
             steps {
                 bat "docker build -t %DOCKER_IMAGE%:%TAG% ."
@@ -105,45 +108,44 @@ pipeline {
         }
     }
 }
+```
 
----
+## Kubernetes Deployment
 
-# ☸️ Kubernetes Deployment
+`k8s/deployment.yaml` and `k8s/service.yaml` define the app deployment and internal service.
 
-deployment.yaml and service.yaml define the application and expose it internally.
+- Ensure `image` in `deployment.yaml` is updated to the current tag before commit.
+- Example: `ramesh0112/zudio-app:<TAG>`
 
----
+## Access Application
 
-# 🌐 Access Application
+Use port-forwarding:
 
+```bash
 kubectl port-forward svc/zudio-app-service 8080:80
+```
 
-Open: http://localhost:8080
+Open: `http://localhost:8080`
 
----
+## Argo CD
 
-# 🚀 Argo CD Application
+- Argo CD watches this repo (or configured manifest path).
+- On Git manifest change, it syncs and deploys to cluster.
 
-Argo CD tracks Git repo and deploys automatically when changes occur.
+## Key Notes
 
----
+- Argo CD tracks Git manifests, not Docker image registry directly.
+- Always commit image tag updates for deterministic deployments.
+- Avoid using `latest` in production.
 
-# ⚠️ Key Notes
+## Troubleshooting
 
-- Argo CD tracks Git, not Docker images
-- Always update image tag in Git
-- Avoid using latest tag in production
-
----
-
-# 🐛 Troubleshooting
-
-kubectl get pods  
-kubectl describe pod <pod>  
+```bash
+kubectl get pods
+kubectl describe pod <pod>
 kubectl logs <pod>
+```
 
----
+## Summary
 
-# ✅ Summary
-
-End-to-end CI/CD using Jenkins, Docker, and Argo CD with GitOps workflow.
+End-to-end CI/CD workflow for the Zudio app with Jenkins, Docker, Kubernetes, and Argo CD.
