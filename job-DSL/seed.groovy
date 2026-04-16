@@ -9,7 +9,7 @@ pipelineJob('zudio-pipeline') {
                     branch('main')
                 }
             }
-            scriptPath('jenkinsfile')
+            scriptPath('jenkinsfile_windows')
         }
     }
 
