@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: my-app
+  name: zudio-app
   namespace: argocd   # MUST be argocd
 spec:
   project: zudio     # Must match AppProject
